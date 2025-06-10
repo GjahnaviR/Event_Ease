@@ -8,8 +8,12 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    setIsAdmin(userRole === 'admin');
+
     const fetchCategories = async () => {
       try {
         const data = await eventCategoryService.getAll();
@@ -32,9 +36,11 @@ const Home = () => {
         <div className="hero-content">
           <h1>Your Ultimate Event Companion</h1>
           <p>Discover, Create, and Manage Unforgettable Events</p>
-          <Link to="/add-event" className="cta-button">
-            Create Event
-          </Link>
+          {isAdmin && (
+            <Link to="/add-event" className="cta-button">
+              Create Event
+            </Link>
+          )}
           <Link to="/events" className="explore-button">
             Explore Events
           </Link>

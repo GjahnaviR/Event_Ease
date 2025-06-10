@@ -326,3 +326,25 @@
         font-size: 1rem;
     }
 }
+
+.why-choose-us-section {
+    margin-top: 5rem;
+    text-align: center;
+}
+
+.why-choose-us-section h2 {
+    color: var(--primary-blue);
+    font-size: 2.8rem;
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.choose-us-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+}
+
+.choose-us-grid .about-card {
+    /* Inherits styling from .about-card, add specific overrides if needed */
+}

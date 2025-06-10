@@ -74,6 +74,34 @@ export const authService = {
       throw error;
     }
   },
+  forgotPassword: async (email) => {
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to send reset link');
+    }
+    return await response.json();
+  },
+  resetPassword: async (token, password) => {
+    const response = await fetch(`${API_URL}/auth/reset-password/${token}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to reset password');
+    }
+    return await response.json();
+  },
 };
 
 // Contact services
@@ -82,6 +110,26 @@ export const contactService = {
     const response = await api.post("/contact", contactData);
     return response.data;
   },
+  
+  getAllContacts: async () => {
+    const response = await api.get("/contact");
+    return response.data;
+  },
+
+  getContact: async (id) => {
+    const response = await api.get(`/contact/${id}`);
+    return response.data;
+  },
+
+  updateContactStatus: async (id, status) => {
+    const response = await api.patch(`/contact/${id}`, { status });
+    return response.data;
+  },
+
+  deleteContact: async (id) => {
+    const response = await api.delete(`/contact/${id}`);
+    return response.data;
+  }
 };
 
 // EventCategory services
@@ -132,6 +180,10 @@ export const eventService = {
   },
   addReview: async (id, reviewData) => {
     const response = await api.post(`/events/${id}/reviews`, reviewData);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/events/${id}`);
     return response.data;
   },
 };

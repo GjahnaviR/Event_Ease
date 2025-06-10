@@ -28,46 +28,26 @@ const About = () => {
         </div>
       </div>
 
-      <div className="about-image-section">
-        <div className="image-card">
-          <img src="/images/event-planning.jpg" alt="Event Planning" />
-          <div className="image-overlay">
-            <h3>Comprehensive Planning</h3>
-            <p>From concept to execution, we handle every detail</p>
+      <div className="why-choose-us-section">
+        <h2>Why Choose Us?</h2>
+        <div className="choose-us-grid">
+          <div className="about-card">
+            <h2>Unmatched Expertise</h2>
+            <p>Our team comprises seasoned professionals with years of experience in event planning and execution, ensuring every detail is handled with precision.</p>
           </div>
-        </div>
-        <div className="image-card">
-          <img src="/images/event-success.jpg" alt="Event Success" />
-          <div className="image-overlay">
-            <h3>Proven Success</h3>
-            <p>Thousands of successful events and happy clients</p>
-          </div>
-        </div>
-      </div>
 
-      <div className="team-section">
-        <h2>Meet Our Expert Team</h2>
-        <div className="team-grid">
-          <div className="team-card">
-            <img src="/images/team-1.jpg" alt="Team Member" className="team-image" />
-            <div className="team-info">
-              <h3>Sarah Johnson</h3>
-              <p>Senior Event Planner</p>
-            </div>
+          <div className="about-card">
+            <h2>Innovative Solutions</h2>
+            <p>We leverage cutting-edge technology and creative approaches to deliver unique and engaging event experiences that stand out.</p>
           </div>
-          <div className="team-card">
-            <img src="/images/team-2.jpg" alt="Team Member" className="team-image" />
-            <div className="team-info">
-              <h3>Michael Chen</h3>
-              <p>Vendor Relations Manager</p>
-            </div>
+
+          <div className="about-card">
+            <h2>Client-Centric Approach</h2>
+            <p>Your vision is our priority. We work closely with you from concept to completion, ensuring your event truly reflects your aspirations.</p>
           </div>
-          <div className="team-card">
-            <img src="/images/team-3.jpg" alt="Team Member" className="team-image" />
-            <div className="team-info">
-              <h3>Emma Rodriguez</h3>
-              <p>Client Experience Director</p>
-            </div>
+          <div className="about-card">
+            <h2>Seamless Execution</h2>
+            <p>From logistics to on-site management, we ensure a smooth and flawless event, allowing you to relax and enjoy the occasion.</p>
           </div>
         </div>
       </div>

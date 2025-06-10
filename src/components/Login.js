@@ -59,6 +59,12 @@ const Login = ({ onAuthChange }) => {
           <button type="submit" className="login-button">
             Login
           </button>
+          <p className="login-footer">
+            Don't have an account? <Link to="/signup">Register</Link>
+          </p>
+          <p className="login-footer">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
         </form>
         <p className="signup-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>

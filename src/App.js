@@ -20,6 +20,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import EditProfile from "./components/EditProfile";
 import BookingConfirmation from "./components/BookingConfirmation";
 import EventPlanning from './components/EventPlanning';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 // import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
 import "./App.css";
 
@@ -117,6 +119,8 @@ function App() {
             }
           />
           <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>

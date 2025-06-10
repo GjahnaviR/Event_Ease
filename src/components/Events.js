@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { eventService } from '../services/api';
 import './Events.css';
 
@@ -7,15 +7,23 @@ const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    const queryParams = new URLSearchParams(location.search);
+    const categoryId = queryParams.get('category');
+    fetchEvents(categoryId);
+  }, [location.search]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (categoryId = null) => {
     try {
       setLoading(true);
-      const data = await eventService.getAll();
+      let data;
+      if (categoryId) {
+        data = await eventService.search({ category: categoryId });
+      } else {
+        data = await eventService.getAll();
+      }
       setEvents(data);
       setError(null);
     } catch (err) {
