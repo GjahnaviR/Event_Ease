@@ -4,6 +4,19 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { protect } = require("../middleware/auth");
 const bcrypt = require("bcrypt");
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+// Create a transporter for sending emails
+const transporter = nodemailer.createTransport({
+  host: 'smtp.sendgrid.net',
+  port: 587,
+  secure: false, // Use 'true' if port is 465, 'false' if port is 587
+  auth: {
+    user: 'apikey',
+    pass: process.env.SENDGRID_API_KEY
+  }
+});
 
 // Register user
 router.post("/register", async (req, res) => {
@@ -142,6 +155,74 @@ router.put("/profile", protect, async (req, res) => {
   } catch (err) {
     console.error('Profile update error:', err);
     res.status(500).json({ message: "Failed to update profile" });
+  }
+});
+
+// Forgot Password
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
+    await user.save();
+
+    // Create reset URL
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    // Send email
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>You requested a password reset</p>
+        <p>Click this <a href="${resetUrl}">link</a> to reset your password.</p>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Password reset link sent to your email" });
+  } catch (err) {
+    console.error('Password reset error:', err);
+    res.status(500).json({ message: "Error sending reset link" });
+  }
+});
+
+// Reset Password
+router.post("/reset-password/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    // Update password
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password has been reset successfully" });
+  } catch (err) {
+    console.error('Password reset error:', err);
+    res.status(500).json({ message: "Error resetting password" });
   }
 });
 

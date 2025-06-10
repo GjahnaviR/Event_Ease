@@ -193,4 +193,21 @@ router.put("/:id", protect, restrictTo("admin"), async (req, res) => {
   }
 });
 
+// Delete an event (Admin only)
+router.delete("/:id", protect, restrictTo("admin"), async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    await event.deleteOne();
+    res.json({ message: "Event removed" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router; 
