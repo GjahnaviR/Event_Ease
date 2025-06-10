@@ -1,0 +1,236 @@
+.event-detail-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.event-header {
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-title-section {
+  margin-bottom: 1.5rem;
+}
+
+.event-title-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.category {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.event-contact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.event-contact p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.event-contact p::before {
+  content: "•";
+  color: #64b5f6;
+  font-size: 1.5rem;
+}
+
+.event-image-container {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-image {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-image:hover {
+  transform: scale(1.02);
+}
+
+.event-description,
+.event-features,
+.event-organizer,
+.event-benefits,
+.event-audience,
+.event-expectations {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.event-description h2,
+.event-features h2,
+.event-organizer h2,
+.event-benefits h2,
+.event-audience h2,
+.event-expectations h2 {
+  color: #1a237e;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e3f2fd;
+}
+
+.event-description p,
+.event-organizer p,
+.event-audience p,
+.event-expectations p {
+  color: #424242;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.event-features ul,
+.event-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-features li,
+.event-benefits li {
+  padding: 1rem 0;
+  border-bottom: 1px solid #e3f2fd;
+  color: #424242;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.event-features li:last-child,
+.event-benefits li:last-child {
+  border-bottom: none;
+}
+
+.event-features li::before,
+.event-benefits li::before {
+  content: "✓";
+  color: #1a237e;
+  font-weight: bold;
+}
+
+.event-actions {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.book-now-button {
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+  color: white;
+  border: none;
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(26, 35, 126, 0.2);
+}
+
+.book-now-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #1a237e;
+}
+
+.error-message {
+  text-align: center;
+  padding: 3rem;
+  color: #d32f2f;
+  font-size: 1.2rem;
+  background: #ffebee;
+  border-radius: 12px;
+  margin: 2rem;
+}
+
+.no-event-found {
+  text-align: center;
+  padding: 3rem;
+  color: #424242;
+  font-size: 1.2rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  margin: 2rem;
+}
+
+@media (max-width: 768px) {
+  .event-detail-container {
+    padding: 0 1rem;
+    margin: 1rem auto;
+  }
+
+  .event-header {
+    padding: 1.5rem;
+  }
+
+  .event-title-section h1 {
+    font-size: 2rem;
+  }
+
+  .event-image {
+    height: 300px;
+  }
+
+  .event-description,
+  .event-features,
+  .event-organizer,
+  .event-benefits,
+  .event-audience,
+  .event-expectations {
+    padding: 1.5rem;
+  }
+
+  .event-description h2,
+  .event-features h2,
+  .event-organizer h2,
+  .event-benefits h2,
+  .event-audience h2,
+  .event-expectations h2 {
+    font-size: 1.5rem;
+  }
+
+  .event-contact {
+    grid-template-columns: 1fr;
+  }
+
+  .book-now-button {
+    width: 100%;
+    padding: 1rem;
+  }
+} 
