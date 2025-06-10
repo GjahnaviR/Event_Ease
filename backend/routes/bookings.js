@@ -7,25 +7,33 @@ const { protect, restrictTo } = require("../middleware/auth");
 // Get all bookings (admin only)
 router.get("/", protect, restrictTo("admin"), async (req, res) => {
   try {
+    console.log("Attempting to fetch all bookings...");
     const bookings = await Booking.find()
       .populate("user", "name email")
       .populate("event", "name location date price imageUrl");
+    console.log(`Found ${bookings.length} total bookings.`);
     res.json(bookings);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching all bookings:", err.message);
+    console.error(err.stack);
+    res.status(500).json({ message: "Server error fetching all bookings", error: err.message });
   }
 });
 
 // Get user's bookings
 router.get("/my-bookings", protect, async (req, res) => {
   try {
+    console.log(`Attempting to fetch bookings for user: ${req.user.id}`);
     const bookings = await Booking.find({ user: req.user.id }).populate(
       "event",
       "name location imageUrl price date description"
     );
+    console.log(`Found ${bookings.length} bookings for user ${req.user.id}.`);
     res.json(bookings);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching user bookings:", err.message);
+    console.error(err.stack);
+    res.status(500).json({ message: "Server error fetching user bookings", error: err.message });
   }
 });
 
@@ -57,6 +65,7 @@ router.get("/:id", protect, async (req, res) => {
 // Create booking
 router.post("/", protect, async (req, res) => {
   try {
+    console.log("Received booking request:", req.body);
     const {
       eventId,
       startDate,
@@ -90,13 +99,16 @@ router.post("/", protect, async (req, res) => {
     });
 
     await booking.save();
+    console.log("Booking saved:", booking);
 
     // Update available tickets
     event.availableTickets -= numberOfTickets;
     await event.save();
+    console.log("Event tickets updated:", event);
 
     res.status(201).json(booking);
   } catch (err) {
+    console.error("Error creating booking:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

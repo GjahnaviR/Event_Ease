@@ -10,17 +10,6 @@ const api = axios.create({
   },
 });
 
-// Add token to requests if it exists
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
 // Add response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
@@ -29,8 +18,24 @@ api.interceptors.response.use(
       // Clear auth data and redirect to login
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("username");
       window.location.href = "/login";
     }
+    return Promise.reject(error);
+  }
+);
+
+// Add request interceptor to add auth token to requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );
@@ -123,10 +128,6 @@ export const eventService = {
   },
   update: async (id, eventData) => {
     const response = await api.put(`/events/${id}`, eventData);
-    return response.data;
-  },
-  delete: async (id) => {
-    const response = await api.delete(`/events/${id}`);
     return response.data;
   },
   addReview: async (id, reviewData) => {

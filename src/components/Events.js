@@ -9,20 +9,22 @@ const Events = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const data = await eventService.getAll();
-        setEvents(data);
-      } catch (err) {
-        setError("Failed to load events. Please try again later.");
-        console.error("Error fetching events:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEvents();
   }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const data = await eventService.getAll();
+      setEvents(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load events. Please try again later.');
+      console.error('Error fetching events:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -40,8 +42,7 @@ const Events = () => {
   return (
     <div className="events-page">
       <div className="events-header">
-        <h1>Discover Amazing Events</h1>
-        <p>Find and book your next unforgettable experience</p>
+        <h1>Upcoming Events</h1>
       </div>
 
       <div className="events-grid">
@@ -69,13 +70,23 @@ const Events = () => {
                     <i className="fas fa-calendar-alt"></i>
                     <span>{new Date(event.date).toLocaleDateString()}</span>
                   </div>
-                  <div className="event-detail">
-                    <i className="fas fa-ticket-alt"></i>
-                    <span>{event.availableTickets} tickets left</span>
-                  </div>
+                  {event.eventType === "ticket" ? (
+                    <div className="event-detail">
+                      <i className="fas fa-ticket-alt"></i>
+                      <span>{event.availableTickets} tickets left</span>
+                    </div>
+                  ) : (
+                    <div className="event-detail">
+                      <i className="fas fa-users"></i>
+                      <span>Up to {event.planningDetails?.guestCount || 'N/A'} guests</span>
+                    </div>
+                  )}
                 </div>
-                <Link to={`/events/${event._id}`} className="view-event-button">
-                  View Details
+                <Link 
+                  to={`/events/${event._id}`} 
+                  className={`view-event-button ${event.eventType === "planning" ? "planning" : ""}`}
+                >
+                  {event.eventType === "planning" ? "Plan My Event" : "View Details"}
                 </Link>
               </div>
             </div>

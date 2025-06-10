@@ -103,10 +103,10 @@ const BookingPage = () => {
     try {
       const bookingData = {
         eventId: location.state.eventId,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        quantity: formData.quantity,
+        startDate: new Date().toISOString(), // Current date as start date
+        endDate: new Date(Date.now() + 24*60*60*1000).toISOString(), // Next day as end date
+        numberOfTickets: formData.quantity,
+        specialRequests: `Contact: ${formData.phone}, Email: ${formData.email}`,
         totalPrice: formData.amount,
         paymentStatus: bookingType === 'paid' ? 'pending' : 'not_required',
         status: 'pending'

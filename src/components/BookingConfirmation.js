@@ -1,144 +1,88 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./BookingConfirmation.css";
 
 const BookingConfirmation = () => {
   const location = useLocation();
-  const bookingDetails = location.state?.bookingDetails || {};
-  const paymentDetails = location.state?.paymentDetails || {};
-  const itemType = location.state?.type || "";
-  const itemName = location.state?.itemName || "";
-  const price = location.state?.price || 0;
+  const navigate = useNavigate();
+  const { bookingDetails, type, eventName, formData, price } = location.state || {};
 
-  // Generate a random booking reference number
-  const bookingReference = `BK${Math.random()
-    .toString(36)
-    .substr(2, 9)
-    .toUpperCase()}`;
-
-  // Ensure price is not negative
-  const safePrice = Math.max(0, price);
+  if (!location.state) {
+    return (
+      <div className="booking-confirmation">
+        <div className="error-card">
+          <h2>Booking Information Not Found</h2>
+          <p>Please try booking again.</p>
+          <button onClick={() => navigate('/events')} className="back-button">
+            Back to Events
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="confirmation-container">
-      <div className="confirmation-content">
+    <div className="booking-confirmation">
+      <div className="confirmation-card">
         <div className="success-icon">✓</div>
-        <h1>Booking Confirmed!</h1>
-        <p className="confirmation-message">
-          Thank you for your booking. Your payment has been processed
-          successfully.
-        </p>
-
+        <h2>{type === 'planning' ? 'Planning Request Submitted!' : 'Booking Confirmed!'}</h2>
+        
         <div className="booking-details">
-          <h2>Booking Details</h2>
-          <div className="detail-item">
-            <span>Booking Reference:</span>
-            <span className="reference">{bookingReference}</span>
-          </div>
-          <div className="detail-item">
-            <span>Item Type:</span>
-            <span className="capitalize">{itemType}</span>
-          </div>
-          <div className="detail-item">
-            <span>Item Name:</span>
-            <span>{itemName}</span>
-          </div>
-
-          {itemType === "destination" && (
+          <h3>{type === 'planning' ? 'Planning Request Details' : 'Booking Details'}</h3>
+          <p><strong>Event:</strong> {eventName}</p>
+          
+          {type === 'planning' ? (
             <>
-              <div className="detail-item">
-                <span>Start Date:</span>
-                <span>{bookingDetails.startDate}</span>
-              </div>
-              <div className="detail-item">
-                <span>End Date:</span>
-                <span>{bookingDetails.endDate}</span>
-              </div>
-              <div className="detail-item">
-                <span>Travelers:</span>
-                <span>{bookingDetails.travelers}</span>
-              </div>
-              <div className="detail-item">
-                <span>Package:</span>
-                <span className="capitalize">{bookingDetails.package}</span>
-              </div>
+              <p><strong>Event Date:</strong> {new Date(formData.eventDate).toLocaleDateString()}</p>
+              <p><strong>Number of Guests:</strong> {formData.guestCount}</p>
+              <p><strong>Package Type:</strong> {formData.packageType.charAt(0).toUpperCase() + formData.packageType.slice(1)}</p>
+              <p><strong>Venue:</strong> {formData.venue || 'To be decided'}</p>
+              <p><strong>Theme:</strong> {formData.theme || 'To be decided'}</p>
+              {formData.additionalServices.length > 0 && (
+                <p><strong>Additional Services:</strong> {formData.additionalServices.join(', ')}</p>
+              )}
+              <p><strong>Contact Name:</strong> {formData.contactName}</p>
+              <p><strong>Contact Email:</strong> {formData.contactEmail}</p>
+              <p><strong>Contact Phone:</strong> {formData.contactPhone}</p>
+              {formData.budget && <p><strong>Budget Range:</strong> {formData.budget}</p>}
+              {formData.specialRequirements && (
+                <p><strong>Special Requirements:</strong> {formData.specialRequirements}</p>
+              )}
+            </>
+          ) : (
+            <>
+              <p><strong>Booking ID:</strong> {bookingDetails._id}</p>
+              <p><strong>Number of Tickets:</strong> {bookingDetails.numberOfTickets}</p>
+              <p><strong>Total Amount:</strong> ₹{price}</p>
+              <p><strong>Status:</strong> {bookingDetails.status}</p>
+              <p><strong>Payment Status:</strong> {bookingDetails.paymentStatus}</p>
             </>
           )}
-
-          {itemType === "flight" && (
-            <>
-              <div className="detail-item">
-                <span>Flight Number:</span>
-                <span>{bookingDetails.flightNumber}</span>
-              </div>
-              <div className="detail-item">
-                <span>Date:</span>
-                <span>{bookingDetails.date}</span>
-              </div>
-              <div className="detail-item">
-                <span>Passengers:</span>
-                <span>{bookingDetails.passengers}</span>
-              </div>
-              <div className="detail-item">
-                <span>Class:</span>
-                <span className="capitalize">{bookingDetails.class}</span>
-              </div>
-            </>
-          )}
-
-          {itemType === "hotel" && (
-            <>
-              <div className="detail-item">
-                <span>Check-in:</span>
-                <span>{bookingDetails.checkIn}</span>
-              </div>
-              <div className="detail-item">
-                <span>Check-out:</span>
-                <span>{bookingDetails.checkOut}</span>
-              </div>
-              <div className="detail-item">
-                <span>Guests:</span>
-                <span>{bookingDetails.guests}</span>
-              </div>
-              <div className="detail-item">
-                <span>Room Type:</span>
-                <span className="capitalize">{bookingDetails.roomType}</span>
-              </div>
-            </>
-          )}
-
-          <div className="detail-item total">
-            <span>Total Amount:</span>
-            <span>₹{safePrice.toLocaleString("en-IN")}</span>
-          </div>
         </div>
 
-        <div className="payment-details">
-          <h2>Payment Details</h2>
-          <div className="detail-item">
-            <span>Card Number:</span>
-            <span>{paymentDetails.cardNumber}</span>
-          </div>
-          <div className="detail-item">
-            <span>Card Holder:</span>
-            <span>{paymentDetails.cardHolder}</span>
-          </div>
+        <div className="confirmation-message">
+          {type === 'planning' ? (
+            <p>Our team will review your planning request and contact you within 24 hours to discuss the details further.</p>
+          ) : (
+            <p>Thank you for your booking! You can view your booking details in your account.</p>
+          )}
         </div>
 
         <div className="confirmation-actions">
-          <Link to="/dashboard" className="dashboard-button">
-            Go to Dashboard
-          </Link>
-          <Link to="/" className="home-button">
-            Return to Home
-          </Link>
-        </div>
-
-        <div className="confirmation-note">
-          <p>
-            A confirmation email has been sent to your registered email address
-            with all the booking details.
-          </p>
+          {type === 'planning' ? (
+            <button onClick={() => navigate('/events')} className="browse-button">
+              Browse More Events
+            </button>
+          ) : (
+            <>
+              <button onClick={() => navigate('/my-bookings')} className="view-bookings-button">
+                View My Bookings
+              </button>
+              <button onClick={() => navigate('/events')} className="browse-button">
+                Browse More Events
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

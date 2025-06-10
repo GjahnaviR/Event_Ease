@@ -33,10 +33,47 @@ const eventSchema = new mongoose.Schema(
       ref: "EventCategory",
       required: true,
     },
+    eventType: {
+      type: String,
+      enum: ["ticket", "planning"],
+      required: true,
+      default: "ticket"
+    },
+    // Fields for ticket-based events
     availableTickets: {
       type: Number,
-      required: true,
       min: 0,
+      // Only required for ticket-based events
+      required: function() {
+        return this.eventType === "ticket";
+      }
+    },
+    // Fields for planning services
+    planningDetails: {
+      guestCount: {
+        type: Number,
+        min: 0,
+        // Only required for planning services
+        required: function() {
+          return this.eventType === "planning";
+        }
+      },
+      duration: {
+        type: String,
+        // Only required for planning services
+        required: function() {
+          return this.eventType === "planning";
+        }
+      },
+      services: [{
+        type: String
+      }],
+      inclusions: [{
+        type: String
+      }],
+      customizations: [{
+        type: String
+      }]
     },
     features: [
       {

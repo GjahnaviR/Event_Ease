@@ -1,28 +1,32 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../services/api";
+// import { useAuth } from "../contexts/AuthContext";
 import "./Login.css"; // Make sure you have this CSS
 
-const Login = ({ handleAuthChange }) => {
+const Login = ({ onAuthChange }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  // const { login } = useAuth(); // Get login function from AuthContext
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
     try {
-      const response = await authService.login(email, password);
-      localStorage.setItem("authToken", response.token);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      localStorage.setItem("userRole", response.user.role);
-      localStorage.setItem("username", response.user.name);
-      handleAuthChange(); // Notify App.js of successful login
+      const { token, user } = await authService.login(email, password);
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userRole", user.role);
+      localStorage.setItem("username", user.name);
+      
+      if (onAuthChange) {
+        onAuthChange();
+      }
+      
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred during login");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -30,36 +34,34 @@ const Login = ({ handleAuthChange }) => {
     <div className="login-container">
       <div className="login-box">
         <h2>Login</h2>
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="email">Email:</label>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
-              placeholder="Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="input-group">
-            <label htmlFor="password">Password:</label>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
-              placeholder="Your Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
           <button type="submit" className="login-button">
             Login
           </button>
         </form>
         <p className="signup-link">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     </div>

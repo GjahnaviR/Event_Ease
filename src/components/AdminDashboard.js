@@ -103,7 +103,7 @@ const AdminDashboard = () => {
           filteredBookings.map((booking) => (
             <div key={booking._id} className="booking-item">
               <div className="booking-image">
-                <img src={booking.event.image} alt={booking.event.name} />
+                <img src={booking.event.imageUrl} alt={booking.event.name} />
               </div>
               <div className="booking-details">
                 <h3>{booking.event.name}</h3>

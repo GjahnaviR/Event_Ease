@@ -3,10 +3,12 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { protect } = require("../middleware/auth");
+const bcrypt = require("bcrypt");
 
 // Register user
 router.post("/register", async (req, res) => {
   try {
+    console.log("Incoming registration request body:", req.body);
     const { name, email, password } = req.body;
 
     // Check if user exists
@@ -47,37 +49,34 @@ router.post("/register", async (req, res) => {
 // Login user
 router.post("/login", async (req, res) => {
   try {
+    console.log("Incoming login request body:", req.body);
     const { email, password } = req.body;
+    console.log("Destructured email:", email, "Type:", typeof email);
+    console.log("Destructured password:", password, "Type:", typeof password);
 
-    // Check if user exists
+    console.log("Before User.findOne - email value:", email, "email type:", typeof email);
     const user = await User.findOne({ email });
+    console.log("User found (or null):", user ? user.email : "null");
+    if (user) {
+        console.log("User password from DB (first 10 chars):", user.password ? user.password.substring(0, 10) + '...' : 'null');
+    }
+
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Check password
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Create token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Login error:", err.message);
+    console.error(err.stack); // Log the full stack trace
+    res.status(500).json({ message: "Server error during login", error: err.message });
   }
 });
 

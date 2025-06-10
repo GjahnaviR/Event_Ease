@@ -6,10 +6,13 @@ const { protect, restrictTo } = require("../middleware/auth");
 // Get all event categories
 router.get("/", async (req, res) => {
   try {
+    console.log("Attempting to fetch all event categories...");
     const categories = await EventCategory.find();
+    console.log(`Found ${categories.length} categories.`);
     res.json(categories);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching event categories:", err);
+    res.status(500).json({ message: "Server error fetching categories", error: err.message });
   }
 });
 

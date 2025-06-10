@@ -4,9 +4,13 @@ const User = require("../models/User");
 exports.protect = async (req, res, next) => {
   try {
     // Get token from header
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+    const authHeader = req.header("Authorization");
+    console.log("Auth Header:", authHeader);
+    const token = authHeader?.replace("Bearer ", "");
+    console.log("Extracted Token:", token);
 
     if (!token) {
+      console.log("Protect middleware: No token found.");
       return res
         .status(401)
         .json({ message: "No token, authorization denied" });
@@ -14,17 +18,22 @@ exports.protect = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded Token (ID, Role):", decoded.id, decoded.role);
 
     // Get user from token
     const user = await User.findById(decoded.id).select("-password");
     if (!user) {
+      console.log("Protect middleware: User not found for decoded ID.");
       return res.status(401).json({ message: "User not found" });
     }
 
     req.user = user;
+    console.log("Protect middleware: User attached to request:", req.user.email);
     next();
   } catch (err) {
-    res.status(401).json({ message: "Token is not valid" });
+    console.error("Protect middleware error:", err.message);
+    console.error("Protect middleware stack:", err.stack);
+    res.status(401).json({ message: "Token is not valid or expired", error: err.message });
   }
 };
 

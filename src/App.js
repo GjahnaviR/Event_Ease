@@ -18,6 +18,9 @@ import AddEvent from "./components/AddEvent";
 import AdminDashboard from "./components/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EditProfile from "./components/EditProfile";
+import BookingConfirmation from "./components/BookingConfirmation";
+import EventPlanning from './components/EventPlanning';
+// import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
 import "./App.css";
 
 // Initialize Stripe
@@ -28,38 +31,42 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = () => {
     const token = localStorage.getItem('authToken');
     const userRole = localStorage.getItem('userRole');
     if (token) {
       setIsAuthenticated(true);
       setIsAdmin(userRole === 'admin');
+    } else {
+      setIsAuthenticated(false);
+      setIsAdmin(false);
     }
-  }, []);
+  };
 
   const handleAuthChange = () => {
-    const token = localStorage.getItem('authToken');
-    const userRole = localStorage.getItem('userRole');
-    const newIsAuthenticated = !!token;
-    const newIsAdmin = token && userRole === 'admin';
-    setIsAuthenticated(newIsAuthenticated);
-    setIsAdmin(newIsAdmin);
-    console.log('handleAuthChange triggered:');
-    console.log('  isAuthenticated:', newIsAuthenticated);
-    console.log('  isAdmin:', newIsAdmin);
+    checkAuthStatus();
   };
 
   return (
     <Router>
       <div className="App">
-        <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} handleAuthChange={handleAuthChange} />
+        <Navbar 
+          isAuthenticated={isAuthenticated} 
+          isAdmin={isAdmin} 
+          handleAuthChange={handleAuthChange} 
+        />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login handleAuthChange={handleAuthChange} />} />
-          <Route path="/signup" element={<Signup handleAuthChange={handleAuthChange} />} />
+          <Route path="/login" element={<Login onAuthChange={handleAuthChange} />} />
+          <Route path="/signup" element={<Signup onAuthChange={handleAuthChange} />} />
           <Route path="/events" element={<Events />} />
           <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/book-planning/:id" element={<EventPlanning />} />
           <Route path="/booking/:id" element={<Booking />} />
           <Route 
             path="/book-tickets" 
@@ -69,8 +76,22 @@ function App() {
               </Elements>
             } 
           />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/add-event" element={<AddEvent />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/add-event" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+                <AddEvent />
+              </ProtectedRoute>
+            } 
+          />
           <Route
             path="/admin/dashboard"
             element={
@@ -83,7 +104,7 @@ function App() {
             path="/edit-profile"
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <EditProfile isAuthenticated={isAuthenticated} handleAuthChange={handleAuthChange} />
+                <EditProfile onAuthChange={handleAuthChange} />
               </ProtectedRoute>
             }
           />
@@ -95,10 +116,80 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/booking-confirmation" element={<BookingConfirmation />} />
         </Routes>
       </div>
     </Router>
   );
 }
+
+// // New component to use the AuthContext
+// function AppContent() {
+//   const { isAuthenticated, isAdmin, loading } = useAuth();
+
+//   if (loading) {
+//     return <div>Loading authentication...</div>; // Or a loading spinner
+//   }
+
+//   return (
+//     <div className="App">
+//       <Navbar isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
+//       <Routes>
+//         <Route path="/" element={<Home />} />
+//         <Route path="/about" element={<About />} />
+//         <Route path="/contact" element={<Contact />} />
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/signup" element={<Signup />} />
+//         <Route path="/events" element={<Events />} />
+//         <Route path="/events/:id" element={<EventDetail />} />
+//         <Route path="/booking/:id" element={<Booking />} />
+//         <Route 
+//           path="/book-tickets" 
+//           element={
+//             <Elements stripe={stripePromise}>
+//               <BookingPage />
+//             </Elements>
+//           } 
+//         />
+//         <Route path="/dashboard" element={<Dashboard />} />
+//         <Route path="/add-event" element={<AddEvent />} />
+//         <Route
+//           path="/admin/dashboard"
+//           element={
+//             <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+//               <AdminDashboard />
+//             </ProtectedRoute>
+//           }
+//         />
+//         <Route
+//           path="/edit-profile"
+//           element={
+//             <ProtectedRoute isAuthenticated={isAuthenticated}>
+//               <EditProfile />
+//             </ProtectedRoute>
+//           }
+//         />
+//         <Route
+//           path="/my-bookings"
+//           element={
+//             <ProtectedRoute isAuthenticated={isAuthenticated}>
+//               <Dashboard />
+//             </ProtectedRoute>
+//           }
+//         />
+//         <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+//       </Routes>
+//     </div>
+//   );
+// }
+
+// // Wrap App with AuthProvider outside the App function
+// function WrappedApp() {
+//   return (
+//     <AuthProvider>
+//       <App />
+//     </AuthProvider>
+//   );
+// }
 
 export default App;
